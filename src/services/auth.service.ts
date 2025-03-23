@@ -88,44 +88,62 @@ export class AuthService {
 
   async verifyOTP(historyId: number, otp: string): Promise<VerifyOTPResult> {
     try {
-      const result = await this.authRepository.verifyOTP(historyId, otp);
-
-      if (result.error) {
+      const verificationResult = await this.authRepository.verifyOTP(historyId, otp);
+      
+      if (!verificationResult.success) {
         return {
           success: false,
-          message: result.error
+          message: verificationResult.message
         };
       }
 
-      // Call the stored procedure to get the profile summary
-     //  const profileSummary = await this.profileRepository.getProfileSummary(result.account_id);
+      // If verification successful, get user details
+      const user = await this.authRepository.findUserByEmail(verificationResult.message.email);
+      
+      if (!user) {
+        return {
+          success: false,
+          message: {
+            status: 'error',
+            message: 'User not found',
+            email: '',
+            account_id: undefined,
+            account_code: undefined
+          }
+        };
+      }
 
       return {
         success: true,
+        message: {
+          status: verificationResult.message.status,
+          message: verificationResult.message.message,
+          email: verificationResult.message.email
+        },
         user: {
-          login_id: result.login_id,
-          account_code: result.account_code,
-          account_id: result.account_id,
-          email: result.email,
-          password: result.password,
-          first_name: result.first_name,
-          last_name: result.last_name,
-          phone: result.primary_phone,
-          date_of_birth: result.birth_date,
-          age: result.age,
-          address: result.address,
-          city: result.city,
-          state: result.state,
-          country: result.country,
-          zip_code: result.zip,
-          // profile_summary: profileSummary || []
+          login_id: user.login_id,
+          account_code: verificationResult.message.account_code,
+          account_id: verificationResult.message.account_id,
+          email: verificationResult.message.email,
+
+          first_name: user.first_name,
+          last_name: user.last_name,
+          phone: user.primary_phone,
+          date_of_birth: user.birth_date,
+          age: user.age,
+          address: user.address,
+          city: user.city,
+          state: user.state,
+          country: user.country,
+          zip_code: user.zip,
+          profile_summary: user.profile_summary
         }
       };
     } catch (error) {
       console.error('OTP verification error:', error);
       return {
         success: false,
-        message: 'Internal server error'
+        // message: 'Internal server error'
       };
     }
   }
@@ -253,4 +271,4 @@ export class AuthService {
       };
     }
   }
-} 
+}

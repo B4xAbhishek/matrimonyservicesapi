@@ -64,13 +64,18 @@ export interface OTPVerificationResponse {
 
 export interface VerifyOTPResult {
   success: boolean;
-  message?: string;
+  message?: {
+    status: string;
+    message: string;
+    email: string;
+    account_id?: number;
+    account_code?: string;
+  };
   user?: {
-    account_id: any;
+    account_id: number;
     login_id: number;
     account_code: string;
     email: string;
-    password: string;
     first_name: string;
     last_name: string;
     phone: string;
@@ -125,4 +130,4 @@ export interface AuthenticatedRequest extends Request {
     first_name: string;
     last_name: string;
   };
-} 
+}

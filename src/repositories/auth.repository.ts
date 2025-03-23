@@ -54,13 +54,12 @@ export class AuthRepository {
         [historyId, otp]
       );
       
-      console.log('Procedure Results:', results);
-  
-      if (results[0][0].status === 'Success') {
-        return { success: true, message: results[0][0].message };
-      } else {
-        return { success: false, message: results[0][0].message };
-      }
+      const verificationResult = results[0][0];
+      
+      return {
+        success: verificationResult.status === 'Success',
+        message: verificationResult
+      };
     } catch (error) {
       console.error('Error in verifyOTP:', error);
       throw error;
@@ -81,4 +80,4 @@ export class AuthRepository {
       throw error;
     }
   }
-} 
+}
