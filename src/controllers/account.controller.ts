@@ -3,6 +3,9 @@ import { AccountService } from '../services/account.service';
 import { AuthenticatedRequest } from '../interfaces/auth.interface';
 import fs from 'fs';
 import path from 'path';
+import { AccountRepository } from '../repositories/account.repository';
+
+const accountRepository = new AccountRepository();
 
 export const registerAccount = async (req: Request, res: Response) => {
   try {
@@ -172,4 +175,39 @@ export const getProfilePhoto = async (req: AuthenticatedRequest, res: Response) 
       error: error.message
     });
   }
-};                 
+};
+
+export const fetchAccount = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email } = req.params;
+    
+    if (!email) {
+      res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+      return;
+    }
+
+    const account = await accountRepository.findByEmail(email);
+    
+    if (!account) {
+      res.status(404).json({
+        success: false,
+        message: 'Account not found'
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: account
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching account',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+};

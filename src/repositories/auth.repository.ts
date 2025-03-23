@@ -49,19 +49,18 @@ export class AuthRepository {
 
   async verifyOTP(historyId: number, otp: string): Promise<any> {
     try {
-      
-      // If status checks pass, proceed with OTP verification
-      const [results] = await pool.execute(
+      const [results]: any = await pool.query(
         'CALL usp_api_verify_otp(?, ?)',
         [historyId, otp]
       );
       
-      const userDetails = (results as any[])[0];
-      if (!userDetails || userDetails.length === 0) {
-        return { error: 'Invalid OTP' };
+      console.log('Procedure Results:', results);
+  
+      if (results[0][0].status === 'Success') {
+        return { success: true, message: results[0][0].message };
+      } else {
+        return { success: false, message: results[0][0].message };
       }
-
-      return userDetails[0];
     } catch (error) {
       console.error('Error in verifyOTP:', error);
       throw error;

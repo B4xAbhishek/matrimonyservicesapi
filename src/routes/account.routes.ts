@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { registerAccount, updateAccount, uploadPhoto, getProfilePhoto } from '../controllers/account.controller';
+import { registerAccount, updateAccount, uploadPhoto, getProfilePhoto, fetchAccount } from '../controllers/account.controller';
 import { validateApiKey } from '../middlewares/apiKey.middleware';
 import { authenticateJWT } from '../middlewares/auth.middleware';
 import multer from 'multer';
@@ -309,5 +309,35 @@ router.post('/photo', validateApiKey, authenticateJWT, upload.single('photo'), u
  *         description: Server error
  */
 router.get('/photo', validateApiKey, authenticateJWT, getProfilePhoto);
+
+/**
+ * @swagger
+ * /account/{email}:
+ *   get:
+ *     summary: Fetch account details by email
+ *     tags: [Account]
+ *     security:
+ *       - ApiKeyAuth: []
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email address of the account
+ *     responses:
+ *       200:
+ *         description: Account details retrieved successfully
+ *       400:
+ *         description: Invalid email
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Account not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/:email', validateApiKey, authenticateJWT, fetchAccount);
 
 export default router;

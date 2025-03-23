@@ -98,7 +98,7 @@ export class AuthService {
       }
 
       // Call the stored procedure to get the profile summary
-      const profileSummary = await this.profileRepository.getProfileSummary(result.account_id);
+     //  const profileSummary = await this.profileRepository.getProfileSummary(result.account_id);
 
       return {
         success: true,
@@ -118,7 +118,7 @@ export class AuthService {
           state: result.state,
           country: result.country,
           zip_code: result.zip,
-          profile_summary: profileSummary || []
+          // profile_summary: profileSummary || []
         }
       };
     } catch (error) {

@@ -92,9 +92,10 @@ export class AuthController {
 
       const result = await this.authService.verifyOTP(history_id, otp);
       if (!result || !result.user) {
-        return res.status(401).json({
+        return res.status(422).json({
           success: false,
-          message: 'Invalid OTP verification result'
+          message: 'Invalid OTP verification result',
+          result
         });
       }
     
@@ -114,6 +115,7 @@ export class AuthController {
         success: true,
         message: 'OTP verified successfully',
         token,
+        result,
         user: {
           full_name: result.user.first_name + ' ' + result.user.last_name,
           email: result.user.email,

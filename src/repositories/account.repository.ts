@@ -20,6 +20,14 @@ export class AccountRepository {
     return (accounts as any[])[0];
   }
 
+  async findByEmail(email: string): Promise<any> {
+    const [accounts] = await pool.execute(
+      `SELECT * FROM account WHERE email = ?`,
+      [email]
+    );
+    return (accounts as any[])[0];
+  }
+
   async create(accountData: IAccount, hashedPassword: string, connection: PoolConnection): Promise<void> {
     await connection.execute(
       `CALL usp_account_login_create(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -80,4 +88,4 @@ export class AccountRepository {
       values
     );
   }
-} 
+}
